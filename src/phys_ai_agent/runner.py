@@ -80,6 +80,15 @@ async def run_preset_queries(
         if len(mcp_tools) > 30:
             logger.info(f"  ... (+{len(mcp_tools) - 30} more)")
 
+        logger.info("[LLM] waiting for readiness check...")
+        wait_for_llm_ready(
+            base_url=runtime_config.llm_base_url,
+            model=runtime_config.llm_model,
+            api_key=runtime_config.llm_api_key,
+            logger=logger,
+        )
+        logger.info("[LLM] readiness check passed")
+
         llm = OpenAI(base_url=runtime_config.llm_base_url, api_key=runtime_config.llm_api_key)
         session = BridgeSession(
             llm=llm,
@@ -110,7 +119,7 @@ async def run_preset_queries(
                 has_tool_error = _has_tool_error(turns)
 
                 if (not used_any_tool) or has_tool_error:
-                    final_msg = "MCP 도구 호출에 실패했습니다. (자세한 내용은 로그를 확인해 주세요)"
+                    final_msg = "MCP tool execution failed. Check the log for details."
                 else:
                     final_msg = result.get("final_answer")
 
@@ -129,7 +138,7 @@ def smoke_test_chat_completion(
     base_url: str,
     model: str,
     api_key: str = "EMPTY",
-    message: str = "Colab에서 vLLM 정상 동작하나요?",
+    message: str = "Reply with OK.",
     max_tokens: int = 128,
 ) -> str:
     client = OpenAI(base_url=base_url, api_key=api_key)
@@ -139,6 +148,56 @@ def smoke_test_chat_completion(
         max_tokens=max_tokens,
     )
     return response.choices[0].message.content or ""
+
+
+def wait_for_llm_ready(
+    base_url: str,
+    model: str,
+    api_key: str = "EMPTY",
+    timeout_sec: int = 180,
+    poll_interval_sec: float = 3.0,
+    logger: logging.Logger | None = None,
+) -> None:
+    client = OpenAI(base_url=base_url, api_key=api_key)
+    deadline = time.monotonic() + timeout_sec
+    last_error: Exception | None = None
+    attempt = 0
+
+    while time.monotonic() < deadline:
+        attempt += 1
+        try:
+            models = client.models.list()
+            model_ids = [getattr(item, "id", "") for item in getattr(models, "data", [])]
+            if logger:
+                logger.info("[LLM] attempt %s: models=%s", attempt, model_ids or "[]")
+
+            if model_ids and model not in model_ids:
+                raise RuntimeError(
+                    f"Configured model {model!r} is not served by {base_url}. Available: {model_ids}"
+                )
+
+            response_text = smoke_test_chat_completion(
+                base_url=base_url,
+                model=model,
+                api_key=api_key,
+                max_tokens=8,
+            )
+            if logger:
+                logger.info("[LLM] attempt %s: chat smoke test OK (%r)", attempt, response_text)
+            return
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
+            if logger:
+                logger.warning("[LLM] attempt %s failed: %s: %s", attempt, type(exc).__name__, exc)
+            time.sleep(poll_interval_sec)
+
+    error_message = (
+        f"LLM endpoint was not ready within {timeout_sec}s. "
+        f"base_url={base_url}, model={model}"
+    )
+    if last_error is not None:
+        raise RuntimeError(error_message) from last_error
+    raise RuntimeError(error_message)
 
 
 def _has_tool_error(turns: list[dict[str, Any]]) -> bool:

@@ -14,19 +14,31 @@ __all__ = [
     "configure_file_logger",
     "run_preset_queries",
     "smoke_test_chat_completion",
+    "wait_for_llm_ready",
     "build_vllm_server_command",
     "download_model",
 ]
 
 
 def __getattr__(name: str):
-    if name in {"configure_file_logger", "run_preset_queries", "smoke_test_chat_completion"}:
-        from .runner import configure_file_logger, run_preset_queries, smoke_test_chat_completion
+    if name in {
+        "configure_file_logger",
+        "run_preset_queries",
+        "smoke_test_chat_completion",
+        "wait_for_llm_ready",
+    }:
+        from .runner import (
+            configure_file_logger,
+            run_preset_queries,
+            smoke_test_chat_completion,
+            wait_for_llm_ready,
+        )
 
         exports = {
             "configure_file_logger": configure_file_logger,
             "run_preset_queries": run_preset_queries,
             "smoke_test_chat_completion": smoke_test_chat_completion,
+            "wait_for_llm_ready": wait_for_llm_ready,
         }
         return exports[name]
     if name in {"build_vllm_server_command", "download_model"}:
