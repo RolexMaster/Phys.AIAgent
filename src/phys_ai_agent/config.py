@@ -103,7 +103,7 @@ def resolve_runtime_config(
         llm_base_url=os.getenv("LLM_BASE_URL", model_cfg.base_url),
         llm_model=os.getenv("LLM_MODEL", model_cfg.served_model_name),
         llm_api_key=os.getenv("LLM_API_KEY", "EMPTY"),
-        mcp_url=os.getenv("MCP_URL", "https://figures-infants-everywhere-updating.trycloudflare.com/mcp"),
+        mcp_url=os.getenv("MCP_URL", "https://page-romantic-webpage-terrace.trycloudflare.com/mcp"),
         max_turns=int(os.getenv("MAX_TURNS", "8")),
         temp=float(os.getenv("TEMP", "0.2")),
         max_tokens=int(os.getenv("MAX_TOKENS", "512")),
