@@ -1,0 +1,25 @@
+{
+  "name": "eots_intermediate_commands_en",
+  "queries": [
+    "Switch to thermal mode then zoom IR camera to 5x",
+    "Switch to day mode then zoom EO camera to 3x",
+    "Start day camera stabilization then run day autofocus",
+    "Start thermal camera stabilization then run thermal autofocus",
+    "Rotate left 20 degrees then tilt up 5 degrees",
+    "Rotate right 30 degrees then tilt down 3 degrees",
+    "Move to azimuth 30 degrees then move to elevation 3 degrees",
+    "Increase pan speed then increase tilt speed",
+    "Turn on thermal camera then switch to thermal mode",
+    "Turn on day camera then switch to day mode",
+    "Turn on LRF then start distance measurement",
+    "Start distance measurement then show target position",
+    "Start thermal image enhancement then switch IR to black-hot",
+    "Start day image enhancement then zoom EO camera to 3x",
+    "Move to left red lighthouse preset then start auto detection",
+    "Move to right breakwater preset then start auto tracking",
+    "Show auto scan list then start auto scan",
+    "Start auto scan then start recording",
+    "Start recording then start capture",
+    "Start auto detection then get detected object list"
+  ]
+}

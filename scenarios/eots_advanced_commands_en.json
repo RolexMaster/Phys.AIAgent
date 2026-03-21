@@ -1,0 +1,15 @@
+{
+  "name": "eots_advanced_commands_en",
+  "queries": [
+    "If there is any vessel near the left red lighthouse, automatically find it and keep tracking it.",
+    "Scan the entire coastline and automatically focus tracking on any vessel you detect.",
+    "Continuously monitor this area and notify me immediately when any object appears.",
+    "Find a target near the breakwater and report its exact coordinates.",
+    "Perform full-area surveillance and continuously track the most suspicious target.",
+    "Check if there are multiple objects in the current view and prioritize observing the closest one.",
+    "Perform long-range surveillance and automatically stabilize the image when necessary.",
+    "Search for targets in this area and keep tracking the first one you detect.",
+    "When an object of interest is detected, automatically capture a snapshot.",
+    "Patrol the lighthouse area and automatically start recording when movement is detected."
+  ]
+}
