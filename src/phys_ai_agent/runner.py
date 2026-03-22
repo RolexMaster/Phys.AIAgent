@@ -6,11 +6,11 @@ import time
 from pathlib import Path
 from typing import Any
 
-from bridge_session import BridgeSession
 from fastmcp import Client
 from fastmcp.client.transports import StreamableHttpTransport
 from openai import OpenAI
 
+from .bridge_session import BridgeSession
 from .config import RuntimeConfig
 
 
@@ -47,7 +47,7 @@ async def run_preset_queries(
     logger: logging.Logger | None = None,
     session_temp: float = 0.2,
     session_max_tokens: int = 512,
-    session_max_turns: int = 3,
+    session_max_turns: int | None = None,
     language: str = "en",
 ) -> list[dict[str, Any]]:
     logger = logger or configure_file_logger(runtime_config.log_file)
@@ -96,7 +96,7 @@ async def run_preset_queries(
             mcp_tools=mcp_tools,
             temp=session_temp,
             max_tokens=session_max_tokens,
-            max_turns=session_max_turns,
+            max_turns=session_max_turns or runtime_config.max_turns,
             language=language,
         )
 
