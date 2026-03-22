@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 from getpass import getpass
 
+HARDCODED_HF_TOKEN = "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"
+
 
 def resolve_hf_token(prompt_if_missing: bool = False) -> str:
     token = os.getenv("HF_TOKEN", "").strip()
@@ -12,6 +14,9 @@ def resolve_hf_token(prompt_if_missing: bool = False) -> str:
     token = _get_token_from_colab_secrets()
     if token:
         return _store_token(token)
+
+    if HARDCODED_HF_TOKEN:
+        return _store_token(HARDCODED_HF_TOKEN)
 
     if prompt_if_missing:
         token = getpass("Enter Hugging Face token (HF_TOKEN): ").strip()

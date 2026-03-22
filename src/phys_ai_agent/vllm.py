@@ -1,13 +1,37 @@
 from __future__ import annotations
 
+import importlib
 import shlex
+import sys
 
 from .config import ModelConfig
 from .hf_auth import resolve_hf_token
 
 
+def _ensure_huggingface_hub_snapshot_download_compatibility() -> None:
+    try:
+        from huggingface_hub import constants
+    except ModuleNotFoundError:
+        return
+
+    if hasattr(constants, "HF_HUB_ENABLE_HF_TRANSFER"):
+        return
+
+    # Notebook package upgrades can leave an older constants module in memory.
+    loaded_constants = sys.modules.get("huggingface_hub.constants")
+    if loaded_constants is not None:
+        try:
+            constants = importlib.reload(loaded_constants)
+        except Exception:  # noqa: BLE001
+            constants = loaded_constants
+
+    if not hasattr(constants, "HF_HUB_ENABLE_HF_TRANSFER"):
+        constants.HF_HUB_ENABLE_HF_TRANSFER = False
+
+
 def download_model(model_config: ModelConfig, hf_token: str | None = None) -> str:
     token = hf_token or resolve_hf_token(prompt_if_missing=False)
+    _ensure_huggingface_hub_snapshot_download_compatibility()
     try:
         from huggingface_hub import snapshot_download
     except ModuleNotFoundError as exc:
@@ -18,7 +42,6 @@ def download_model(model_config: ModelConfig, hf_token: str | None = None) -> st
         repo_id=model_config.repo_id,
         token=token,
         local_dir=model_config.local_dir,
-        local_dir_use_symlinks=False,
     )
 
 
