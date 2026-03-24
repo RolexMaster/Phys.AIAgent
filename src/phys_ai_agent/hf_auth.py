@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from getpass import getpass
 
-HARDCODED_HF_TOKEN = "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"
+HARDCODED_HF_TOKEN = "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"
 
 
 def resolve_hf_token(prompt_if_missing: bool = False) -> str:
