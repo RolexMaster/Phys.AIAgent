@@ -136,7 +136,7 @@ def resolve_runtime_config(
         mcp_url=os.getenv("MCP_URL", "https://page-romantic-webpage-terrace.trycloudflare.com/mcp"),
         max_turns=int(os.getenv("MAX_TURNS", "8")),
         temp=_resolve_temperature(),
-        max_tokens=int(os.getenv("MAX_TOKENS", "512")),
+        max_tokens=int(os.getenv("MAX_TOKENS", "1024")),
         log_file=_resolve_path(root, os.getenv("LOG_FILE", "mcp_bridge.log")),
         scenario_dir=scenario_dir,
         scenario_name=scenario_name,

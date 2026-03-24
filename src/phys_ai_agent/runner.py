@@ -46,7 +46,7 @@ async def run_preset_queries(
     runtime_config: RuntimeConfig,
     logger: logging.Logger | None = None,
     session_temp: float = 0.2,
-    session_max_tokens: int = 512,
+    session_max_tokens: int = 1024,
     session_max_turns: int | None = None,
     language: str = "en",
 ) -> list[dict[str, Any]]:
