@@ -135,7 +135,7 @@ def resolve_runtime_config(
         llm_api_key=os.getenv("LLM_API_KEY", "EMPTY"),
         mcp_url=os.getenv("MCP_URL", "https://page-romantic-webpage-terrace.trycloudflare.com/mcp"),
         max_turns=int(os.getenv("MAX_TURNS", "8")),
-        temp=float(os.getenv("TEMP", "0.2")),
+        temp=_resolve_temperature(),
         max_tokens=int(os.getenv("MAX_TOKENS", "512")),
         log_file=_resolve_path(root, os.getenv("LOG_FILE", "mcp_bridge.log")),
         scenario_dir=scenario_dir,
@@ -156,3 +156,19 @@ def _resolve_path(project_root: Path, raw_path: str) -> Path:
 def _normalize_model_family(model_family: str) -> str:
     normalized = model_family.lower().replace("-", "_")
     return re.sub(r"^(qwen3_\d+)b$", r"\1", normalized)
+
+
+def _resolve_temperature(default: float = 0.2) -> float:
+    for key in ("AIAGENT_TEMP", "LLM_TEMP", "MODEL_TEMP"):
+        raw = os.getenv(key)
+        if raw:
+            return float(raw)
+
+    raw_temp = os.getenv("TEMP")
+    if raw_temp:
+        try:
+            return float(raw_temp)
+        except ValueError:
+            pass
+
+    return default
