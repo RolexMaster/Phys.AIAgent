@@ -104,7 +104,7 @@ def load_scenario_file(scenario_file: str | Path) -> dict[str, Any]:
 
 def resolve_runtime_config(
     project_root: str | Path,
-    default_model_family: str = "qwen3_14",
+    default_model_family: str = "qwen3_8",
     model_configs: dict[str, ModelConfig] | None = None,
 ) -> RuntimeConfig:
     root = Path(project_root).resolve()
