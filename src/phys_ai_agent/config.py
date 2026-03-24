@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -14,6 +15,7 @@ class ModelConfig:
     local_dir: str
     served_model_name: str
     base_url: str = "http://127.0.0.1:8000/v1"
+    extra_vllm_args: tuple[str, ...] = ()
 
 
 MODEL_CONFIGS: dict[str, ModelConfig] = {
@@ -28,6 +30,34 @@ MODEL_CONFIGS: dict[str, ModelConfig] = {
         repo_id="Qwen/Qwen2.5-7B-Instruct",
         local_dir="/content/models/qwen2.5-7b-instruct",
         served_model_name="Qwen/Qwen2.5-7B-Instruct",
+    ),
+    "qwen3_4": ModelConfig(
+        family="qwen3_4",
+        repo_id="Qwen/Qwen3-4B",
+        local_dir="/content/models/qwen3-4b",
+        served_model_name="Qwen/Qwen3-4B",
+        extra_vllm_args=("--enable-reasoning", "--reasoning-parser", "deepseek_r1"),
+    ),
+    "qwen3_8": ModelConfig(
+        family="qwen3_8",
+        repo_id="Qwen/Qwen3-8B",
+        local_dir="/content/models/qwen3-8b",
+        served_model_name="Qwen/Qwen3-8B",
+        extra_vllm_args=("--enable-reasoning", "--reasoning-parser", "deepseek_r1"),
+    ),
+    "qwen3_14": ModelConfig(
+        family="qwen3_14",
+        repo_id="Qwen/Qwen3-14B",
+        local_dir="/content/models/qwen3-14b",
+        served_model_name="Qwen/Qwen3-14B",
+        extra_vllm_args=("--enable-reasoning", "--reasoning-parser", "deepseek_r1"),
+    ),
+    "qwen3_32": ModelConfig(
+        family="qwen3_32",
+        repo_id="Qwen/Qwen3-32B",
+        local_dir="/content/models/qwen3-32b",
+        served_model_name="Qwen/Qwen3-32B",
+        extra_vllm_args=("--enable-reasoning", "--reasoning-parser", "deepseek_r1"),
     ),
 }
 
@@ -56,7 +86,7 @@ class RuntimeConfig:
 
 def resolve_model_config(model_family: str, model_configs: dict[str, ModelConfig] | None = None) -> ModelConfig:
     model_configs = model_configs or MODEL_CONFIGS
-    normalized = model_family.lower()
+    normalized = _normalize_model_family(model_family)
     if normalized not in model_configs:
         supported = ", ".join(sorted(model_configs))
         raise ValueError(f"Unsupported MODEL_FAMILY: {model_family}. Supported: {supported}")
@@ -121,3 +151,8 @@ def _resolve_path(project_root: Path, raw_path: str) -> Path:
     if path.is_absolute():
         return path
     return project_root / path
+
+
+def _normalize_model_family(model_family: str) -> str:
+    normalized = model_family.lower().replace("-", "_")
+    return re.sub(r"^(qwen3_\d+)b$", r"\1", normalized)

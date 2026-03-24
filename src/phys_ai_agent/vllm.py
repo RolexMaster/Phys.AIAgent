@@ -68,4 +68,5 @@ def build_vllm_server_command(
         "--gpu-memory-utilization",
         f"{gpu_memory_utilization:.2f}",
     ]
+    parts.extend(model_config.extra_vllm_args)
     return " ".join(shlex.quote(part) for part in parts)
