@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import os
 import shlex
 import sys
 
@@ -68,5 +69,11 @@ def build_vllm_server_command(
         "--gpu-memory-utilization",
         f"{gpu_memory_utilization:.2f}",
     ]
-    parts.extend(model_config.extra_vllm_args)
+    if _reasoning_flags_enabled():
+        parts.extend(model_config.extra_vllm_args)
     return " ".join(shlex.quote(part) for part in parts)
+
+
+def _reasoning_flags_enabled() -> bool:
+    raw = os.getenv("VLLM_ENABLE_REASONING", "").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
